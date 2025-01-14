@@ -19,7 +19,6 @@ Usage:
     Run the application using Uvicorn if this script is run directly.
 """
 from pydantic import BaseModel
-from typing import Literal
 from datetime import datetime
 import aiohttp
 
@@ -31,6 +30,9 @@ class Building(BaseModel):
     id: int
     building_name: str
     built_on: datetime
+
+class Buildings(BaseModel):
+    buildings: list[Building]
 
 # Predefined list of buildings
 buildings = [
@@ -55,6 +57,12 @@ async def get_by_id(id: int):
             return i
     # Raise an HTTP 404 exception if the building is not found
     raise HTTPException(status_code=404, detail="Building not found")
+
+@app.get("/buildings", response_model=Buildings)
+async def get_all():
+    """API endpoint that fetches all building data from a predefined list of buildings."""
+    return Buildings(buildings=buildings)
+
 
 # Run the application using Uvicorn if this script is run directly
 if __name__ == "__main__":
